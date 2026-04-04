@@ -2,7 +2,7 @@
 // --------------------------------------
 // キャラ情報
 // --------------------------------------
-export const characters = [
+const characters = [
   { id: 1, name: "アイリ" },
   { id: 2, name: "アイリ（バンド）" },
   { id: 3, name: "アオバ" },
@@ -216,7 +216,7 @@ export const characters = [
 // --------------------------------------
 // 家具情報
 // --------------------------------------
-export const furnitures = [
+const furnitures = [
   { id: 1,  name: "ハロウィーンのパンプキンバーカウンター", rarity: 2 },
   { id: 2,  name: "ベーシック・エレクトリックキーボード", rarity: 3 },
   { id: 3,  name: "ハイランダー自動改札機", rarity: 3 },
@@ -418,7 +418,7 @@ export const furnitures = [
   { id: 199, name: "フレッシュショップテーブル", rarity: 3 },
 ];
 
-export const furnitureCharacterMap = [
+const furnitureCharacterMap = [
   { characterId: 1, furnitureId: 1 },   // アイリ → ハロウィーンのパンプキンバーカウンター
   { characterId: 2, furnitureId: 2 },   // アイリ（バンド） → ベーシック・エレクトリックキーボード
   { characterId: 3, furnitureId: 3 },   // アオバ → ハイランダー自動改札機
