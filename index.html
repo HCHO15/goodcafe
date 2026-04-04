@@ -3,76 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>育成支援ツール（タイルUIプロトタイプ）</title>
+<title>育成支援ツール</title>
 <style>
   body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
   h2 { margin: 10px 0; }
-
   .container { padding: 16px; }
-
-  /* 横並びの大枠 */
-  .row {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .section {
-    background: white;
-    padding: 12px;
-    border-radius: 8px;
-    flex: 1;
-    min-width: 300px;
-  }
-
-  /* タイル表示 */
-  .tile-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 4px;
-  }
-
-  .char-tile, .furniture-tile {
-    background: #fafafa;
-    border-radius: 6px;
-    padding: 6px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #ddd;
-  }
-
-  .char-tile.selected {
-    border: 2px solid #007bff;
-  }
-
-  /* 家具のダミー画像 */
-  .dummy-img {
-    width: 60px;
-    height: 40px;
-    background: #ccc;
-    margin: 0 auto 4px;
-    border-radius: 4px;
-  }
-
-  .btn {
-    padding: 12px 18px;
-    background: #007bff;
-    color: white;
-    border-radius: 6px;
-    display: inline-block;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-
-  .result-card {
-    background: white;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 8px;
-  }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .section { background: white; padding: 12px; border-radius: 8px; flex: 1; min-width: 300px; }
+  .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; padding: 4px; }
+  .char-tile, .furniture-tile { background: #fafafa; border-radius: 6px; padding: 6px; text-align: center; cursor: pointer; border: 1px solid #ddd; }
+  .char-tile.selected { border: 2px solid #007bff; }
+  .dummy-img { width: 60px; height: 40px; background: #ccc; margin: 0 auto 4px; border-radius: 4px; }
+  .btn { padding: 12px 18px; background: #007bff; color: white; border-radius: 6px; display: inline-block; cursor: pointer; margin-top: 10px; }
+  .result-card { background: white; padding: 12px; margin: 10px 0; border-radius: 8px; }
 </style>
 </head>
 <body>
@@ -81,30 +24,24 @@
 
   <!-- 上段：キャラ選択 & 家具所持数 -->
   <div class="row">
-
-    <!-- キャラ選択 -->
     <div class="section">
       <h2>① 育成したいキャラ</h2>
       <div id="charGrid" class="tile-grid"></div>
     </div>
 
-    <!-- 家具所持数 -->
     <div class="section">
       <h2>② 家具の所持数</h2>
       <div id="furnitureGrid" class="tile-grid"></div>
     </div>
-
   </div>
 
   <!-- 中段：ランク別製造可能数 & カフェ空きスペース -->
   <div class="row">
-
     <div class="section">
       <h2>③ ランク別の製造可能数</h2>
-      初級：<input id="rank1" type="number" value="0" min="0" style="width:60px;"><br>
-      中級：<input id="rank2" type="number" value="0" min="0" style="width:60px;"><br>
-      上級：<input id="rank3" type="number" value="0" min="0" style="width:60px;"><br>
-      最上級：<input id="rank4" type="number" value="0" min="0" style="width:60px;"><br>
+      ★1：<input id="rank1" type="number" value="0" min="0" style="width:60px;"><br>
+      ★2：<input id="rank2" type="number" value="0" min="0" style="width:60px;"><br>
+      ★3：<input id="rank3" type="number" value="0" min="0" style="width:60px;"><br>
     </div>
 
     <div class="section">
@@ -112,73 +49,81 @@
       幅：<input id="cafeW" type="number" value="10" min="1" style="width:60px;">
       高さ：<input id="cafeH" type="number" value="10" min="1" style="width:60px;">
     </div>
-
   </div>
 
-  <!-- 計算ボタン -->
   <div class="section">
-    <div class="btn" onclick="calculate()">計算する（ダミー）</div>
+    <div class="btn" onclick="runCalc()">計算する</div>
   </div>
 
-  <!-- 結果 -->
   <div class="section">
-    <h2>⑤ 優先順位リスト（ダミー）</h2>
+    <h2>⑤ 優先順位リスト</h2>
     <div id="resultList"></div>
   </div>
 
 </div>
 
-<script>
-// -----------------------------
-// ダミーキャラ100個生成
-// -----------------------------
+<script type="module">
+import { characters, furnitures } from "./data.js";
+import { calculatePriority } from "./logic.js";
+
+// キャラ表示
 const charGrid = document.getElementById("charGrid");
-for (let i = 1; i <= 100; i++) {
+characters.forEach(c => {
   const div = document.createElement("div");
   div.className = "char-tile";
-  div.textContent = "キャラ" + i;
+  div.textContent = c.name;
   div.onclick = () => div.classList.toggle("selected");
   charGrid.appendChild(div);
-}
+});
 
-// -----------------------------
-// ダミー家具40個生成
-// -----------------------------
+// 家具表示
 const furnitureGrid = document.getElementById("furnitureGrid");
-for (let i = 1; i <= 40; i++) {
+furnitures.forEach(f => {
   const div = document.createElement("div");
   div.className = "furniture-tile";
   div.innerHTML = `
     <div class="dummy-img"></div>
-    家具${i}<br>
+    ${f.name}<br>
     <input type="number" value="0" min="0" style="width:60px;">
   `;
   furnitureGrid.appendChild(div);
-}
+});
 
-// -----------------------------
-// ダミー計算
-// -----------------------------
-function calculate() {
+// 計算実行
+window.runCalc = function() {
+  const selectedCharacters = [...document.querySelectorAll(".char-tile.selected")].map(e => e.textContent);
+
+  const ownedFurniture = [...document.querySelectorAll(".furniture-tile")].map((e, i) => ({
+    id: furnitures[i].id,
+    count: Number(e.querySelector("input").value)
+  }));
+
+  const craftLimits = {
+    1: Number(document.getElementById("rank1").value),
+    2: Number(document.getElementById("rank2").value),
+    3: Number(document.getElementById("rank3").value),
+  };
+
+  const cafeSize = {
+    w: Number(document.getElementById("cafeW").value),
+    h: Number(document.getElementById("cafeH").value),
+  };
+
+  const results = calculatePriority(selectedCharacters, ownedFurniture, craftLimits, cafeSize);
+
   const resultList = document.getElementById("resultList");
   resultList.innerHTML = "";
 
-  const dummyResults = [
-    { rank: 1, name: "家具A（最上級）", score: 95 },
-    { rank: 2, name: "家具B（上級）", score: 80 },
-    { rank: 3, name: "家具C（中級）", score: 60 },
-  ];
-
-  dummyResults.forEach(r => {
+  results.forEach((r, i) => {
     const div = document.createElement("div");
     div.className = "result-card";
     div.innerHTML = `
-      <strong>#${r.rank}：${r.name}</strong><br>
+      <strong>#${i + 1}：${r.name}</strong><br>
       スコア：${r.score}
     `;
     resultList.appendChild(div);
   });
-}
+};
 </script>
 
 </body>
