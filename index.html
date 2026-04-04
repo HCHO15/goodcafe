@@ -1,138 +1,463 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>育成支援ツール</title>
-<style>
-  body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
-  h2 { margin: 10px 0; }
-  .container { padding: 16px; }
-  .row { display: flex; gap: 16px; flex-wrap: wrap; }
-  .section { background: white; padding: 12px; border-radius: 8px; flex: 1; min-width: 300px; }
-  .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; padding: 4px; }
-  .char-tile, .furniture-tile { background: #fafafa; border-radius: 6px; padding: 6px; text-align: center; cursor: pointer; border: 1px solid #ddd; }
-  .char-tile.selected { border: 2px solid #007bff; }
-  .dummy-img { width: 60px; height: 40px; background: #ccc; margin: 0 auto 4px; border-radius: 4px; }
-  .btn { padding: 12px 18px; background: #007bff; color: white; border-radius: 6px; display: inline-block; cursor: pointer; margin-top: 10px; }
-  .result-card { background: white; padding: 12px; margin: 10px 0; border-radius: 8px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>GoodCafe 配置ツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111827;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 12px 16px;
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    header .sub {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    main {
+      padding: 12px 16px 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: #020617;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      padding: 10px 12px 12px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .panel-title span.sub {
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .toolbar label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toolbar input[type="number"],
+    .toolbar select {
+      background: #020617;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 2px 4px;
+      height: 22px;
+    }
+
+    .toolbar button {
+      background: #111827;
+      border-radius: 4px;
+      border: 1px solid #374151;
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 2px 8px;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover {
+      background: #1f2937;
+    }
+
+    .grid {
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #111827;
+      background: #020617;
+      padding: 6px;
+      overflow: auto;
+      max-height: calc(100vh - 220px);
+    }
+
+    .furniture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 6px;
+    }
+
+    .furniture-tile {
+      background: #020617;
+      border-radius: 6px;
+      border: 1px solid #111827;
+      padding: 4px 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .furniture-header {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .furniture-header img {
+      width: 60px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #111827;
+      flex-shrink: 0;
+    }
+
+    .furniture-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .furniture-name {
+      font-size: 11px;
+      color: #e5e7eb;
+      line-height: 1.3;
+      word-break: break-all;
+    }
+
+    .furniture-rarity {
+      font-size: 10px;
+      color: #fbbf24;
+    }
+
+    .furniture-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .furniture-footer input[type="number"] {
+      width: 52px;
+      background: #020617;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 2px 4px;
+      height: 22px;
+    }
+
+    .furniture-footer span.label {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .result-list {
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: calc(100vh - 220px);
+      overflow: auto;
+    }
+
+    .result-item {
+      border-radius: 6px;
+      border: 1px solid #111827;
+      background: #020617;
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .result-main {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .result-main .name {
+      font-size: 11px;
+      color: #e5e7eb;
+    }
+
+    .result-main .score {
+      font-size: 11px;
+      color: #a5b4fc;
+    }
+
+    .result-sub {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 0 4px;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+  </style>
 </head>
 <body>
-
-<div class="container">
-
-  <!-- 上段：キャラ選択 & 家具所持数 -->
-  <div class="row">
-    <div class="section">
-      <h2>① 育成したいキャラ</h2>
-      <div id="charGrid" class="tile-grid"></div>
+  <header>
+    <div>
+      <h1>GoodCafe 配置ツール</h1>
+      <div class="sub">家具 × キャラ対応を考慮した優先度確認用（試作版）</div>
     </div>
-
-    <div class="section">
-      <h2>② 家具の所持数</h2>
-      <div id="furnitureGrid" class="tile-grid"></div>
+    <div class="sub">
+      画像: <code>/images/furniture/家具名.png</code>（ID1〜117） / それ以外はダミー表示
     </div>
-  </div>
+  </header>
 
-  <!-- 中段：ランク別製造可能数 & カフェ空きスペース -->
-  <div class="row">
-    <div class="section">
-      <h2>③ ランク別の製造可能数</h2>
-      ★1：<input id="rank1" type="number" value="0" min="0" style="width:60px;"><br>
-      ★2：<input id="rank2" type="number" value="0" min="0" style="width:60px;"><br>
-      ★3：<input id="rank3" type="number" value="0" min="0" style="width:60px;"><br>
-    </div>
+  <main>
+    <!-- 左：家具一覧 -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>家具一覧</span>
+        <span class="sub">所持数を入力すると右側の優先度が更新されます</span>
+      </div>
 
-    <div class="section">
-      <h2>④ カフェの空きスペース</h2>
-      幅：<input id="cafeW" type="number" value="10" min="1" style="width:60px;">
-      高さ：<input id="cafeH" type="number" value="10" min="1" style="width:60px;">
-    </div>
-  </div>
+      <div class="toolbar">
+        <label>
+          レアリティ:
+          <select id="rarityFilter">
+            <option value="all">すべて</option>
+            <option value="3">★3のみ</option>
+            <option value="2">★2のみ</option>
+            <option value="1">★1のみ</option>
+          </select>
+        </label>
+        <label>
+          名前検索:
+          <input type="text" id="nameFilter" placeholder="家具名の一部" />
+        </label>
+        <button id="clearFilterBtn">フィルタ解除</button>
+      </div>
 
-  <div class="section">
-    <div class="btn" onclick="runCalc()">計算する</div>
-  </div>
+      <div class="grid">
+        <div id="furnitureGrid" class="furniture-grid"></div>
+      </div>
+    </section>
 
-  <div class="section">
-    <h2>⑤ 優先順位リスト</h2>
-    <div id="resultList"></div>
-  </div>
+    <!-- 右：優先度結果（ダミー計算） -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>優先度（仮ロジック）</span>
+        <span class="sub">レアリティ × 所持数から簡易スコアを計算中</span>
+      </div>
 
-</div>
+      <div class="toolbar">
+        <span class="badge">
+          <span class="badge-dot"></span>
+          スコア = レアリティ × 所持数
+        </span>
+        <button id="recalcBtn">再計算</button>
+      </div>
 
-<script type="module">
-import { characters, furnitures } from "./data.js";
-import { calculatePriority } from "./logic.js";
+      <div class="result-list" id="resultList"></div>
+    </section>
+  </main>
 
-// キャラ表示
-const charGrid = document.getElementById("charGrid");
-characters.forEach(c => {
-  const div = document.createElement("div");
-  div.className = "char-tile";
-  div.textContent = c.name;
-  div.onclick = () => div.classList.toggle("selected");
-  charGrid.appendChild(div);
-});
+  <!-- データ定義（characters / furnitures / furnitureCharacterMap） -->
+  <script src="./data.js"></script>
 
-// 家具表示
-const furnitureGrid = document.getElementById("furnitureGrid");
-furnitures.forEach(f => {
-  const div = document.createElement("div");
-  div.className = "furniture-tile";
+  <script>
+    // --- 簡易ロジック：UI と計算を分離しつつ index.html 内にまとめた版 ---
 
-  // 画像パス（家具名.png）
-  const imgPath = `./images/${f.name}.png`;
+    // DOM 取得
+    const furnitureGrid = document.getElementById("furnitureGrid");
+    const resultList = document.getElementById("resultList");
+    const rarityFilter = document.getElementById("rarityFilter");
+    const nameFilter = document.getElementById("nameFilter");
+    const clearFilterBtn = document.getElementById("clearFilterBtn");
+    const recalcBtn = document.getElementById("recalcBtn");
 
-  div.innerHTML = `
-    <img src="${imgPath}" 
-         alt="${f.name}" 
-         style="width:60px; height:40px; object-fit:cover; border-radius:4px; background:#ccc;"
-         onerror="this.onerror=null; this.src='./images/dummy.png';">
-    <div style="font-size:12px; margin-top:4px;">${f.name}</div>
-    <input type="number" value="0" min="0" style="width:60px; margin-top:4px;">
-  `;
+    // 家具ID → 所持数
+    const furnitureCountMap = new Map();
 
-  furnitureGrid.appendChild(div);
-});
+    // 初期描画
+    function renderFurnitureGrid() {
+      furnitureGrid.innerHTML = "";
 
-// 計算実行
-window.runCalc = function() {
-  const selectedCharacters = [...document.querySelectorAll(".char-tile.selected")].map(e => e.textContent);
+      const rarityValue = rarityFilter.value;
+      const nameValue = nameFilter.value.trim();
 
-  const ownedFurniture = [...document.querySelectorAll(".furniture-tile")].map((e, i) => ({
-    id: furnitures[i].id,
-    count: Number(e.querySelector("input").value)
-  }));
+      furnitures.forEach(f => {
+        // フィルタ
+        if (rarityValue !== "all" && String(f.rarity) !== rarityValue) return;
+        if (nameValue && !f.name.includes(nameValue)) return;
 
-  const craftLimits = {
-    1: Number(document.getElementById("rank1").value),
-    2: Number(document.getElementById("rank2").value),
-    3: Number(document.getElementById("rank3").value),
-  };
+        const div = document.createElement("div");
+        div.className = "furniture-tile";
 
-  const cafeSize = {
-    w: Number(document.getElementById("cafeW").value),
-    h: Number(document.getElementById("cafeH").value),
-  };
+        const imgPath = `./images/furniture/${f.name}.png`;
 
-  const results = calculatePriority(selectedCharacters, ownedFurniture, craftLimits, cafeSize);
+        const rarityStars = "★".repeat(f.rarity);
 
-  const resultList = document.getElementById("resultList");
-  resultList.innerHTML = "";
+        const count = furnitureCountMap.get(f.id) ?? 0;
 
-  results.forEach((r, i) => {
-    const div = document.createElement("div");
-    div.className = "result-card";
-    div.innerHTML = `
-      <strong>#${i + 1}：${r.name}</strong><br>
-      スコア：${r.score}
-    `;
-    resultList.appendChild(div);
-  });
-};
-</script>
+        div.innerHTML = `
+          <div class="furniture-header">
+            <img src="${imgPath}"
+                 alt="${f.name}"
+                 onerror="this.onerror=null; this.src='./images/furniture_dummy/dummy.png';" />
+            <div class="furniture-meta">
+              <div class="furniture-name">${f.name}</div>
+              <div class="furniture-rarity">${rarityStars}</div>
+            </div>
+          </div>
+          <div class="furniture-footer">
+            <span class="label">所持数</span>
+            <input type="number" min="0" value="${count}" data-furniture-id="${f.id}" />
+          </div>
+        `;
 
+        const input = div.querySelector("input[type='number']");
+        input.addEventListener("change", () => {
+          const v = Number(input.value) || 0;
+          furnitureCountMap.set(f.id, v);
+          recalcAndRenderResult();
+        });
+
+        furnitureGrid.appendChild(div);
+      });
+    }
+
+    // 簡易スコア計算（本格ロジックは別ファイルに切り出し予定）
+    function recalcAndRenderResult() {
+      const results = [];
+
+      furnitures.forEach(f => {
+        const count = furnitureCountMap.get(f.id) ?? 0;
+        if (count <= 0) return;
+
+        const score = f.rarity * count; // 仮ロジック
+
+        results.push({
+          id: f.id,
+          name: f.name,
+          rarity: f.rarity,
+          count,
+          score,
+        });
+      });
+
+      results.sort((a, b) => b.score - a.score);
+
+      resultList.innerHTML = "";
+
+      results.forEach(r => {
+        const item = document.createElement("div");
+        item.className = "result-item";
+
+        const rarityStars = "★".repeat(r.rarity);
+
+        item.innerHTML = `
+          <div class="result-main">
+            <div class="name">${r.name}</div>
+            <div class="score">スコア: ${r.score}</div>
+          </div>
+          <div class="result-sub">
+            レアリティ: ${rarityStars} / 所持数: ${r.count}
+          </div>
+        `;
+
+        resultList.appendChild(item);
+      });
+
+      if (results.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "result-item";
+        empty.innerHTML = `
+          <div class="result-sub">所持数が入力された家具がありません。</div>
+        `;
+        resultList.appendChild(empty);
+      }
+    }
+
+    // イベント
+    rarityFilter.addEventListener("change", () => {
+      renderFurnitureGrid();
+    });
+
+    nameFilter.addEventListener("input", () => {
+      renderFurnitureGrid();
+    });
+
+    clearFilterBtn.addEventListener("click", () => {
+      rarityFilter.value = "all";
+      nameFilter.value = "";
+      renderFurnitureGrid();
+    });
+
+    recalcBtn.addEventListener("click", () => {
+      recalcAndRenderResult();
+    });
+
+    // 初期化
+    renderFurnitureGrid();
+    recalcAndRenderResult();
+  </script>
 </body>
 </html>
