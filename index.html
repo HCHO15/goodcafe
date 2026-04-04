@@ -2,13 +2,10 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>GoodCafe 配置ツール - タイルUI強化版</title>
+<title>GoodCafe 配置ツール（元のタイル版）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ------------------------------
-   基本レイアウト
------------------------------- */
 body {
   margin: 0;
   background: #0f172a;
@@ -16,77 +13,78 @@ body {
   font-family: system-ui, sans-serif;
 }
 
-header {
-  padding: 12px 16px;
-  background: #020617;
-  border-bottom: 1px solid #1e293b;
+/* 全体レイアウト：3段構成 */
+#container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 10px;
+  padding: 10px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 18px;
-}
-
-header .sub {
-  font-size: 12px;
-  color: #94a3b8;
+@media (max-width: 900px) {
+  #container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ------------------------------
-   キャラタイル（横スクロール）
+   キャラタイル（元の縦スクロール）
 ------------------------------ */
-#characterBar {
-  display: flex;
-  overflow-x: auto;
-  gap: 8px;
-  padding: 10px 12px;
-  background: #0f172a;
-  border-bottom: 1px solid #1e293b;
+#characterPanel {
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 6px;
 }
 
 .char-tile {
-  min-width: 80px;
-  background: #1e293b;
+  background: #334155;
   border-radius: 6px;
   padding: 6px;
   text-align: center;
   cursor: pointer;
-  border: 1px solid #334155;
+  border: 1px solid #475569;
 }
 
 .char-tile.selected {
-  border-color: #38bdf8;
   background: #0ea5e9;
-}
-
-.char-tile img {
-  width: 48px;
-  height: 48px;
-  border-radius: 6px;
-  object-fit: cover;
-  background: #334155;
+  border-color: #38bdf8;
 }
 
 .char-name {
-  font-size: 11px;
-  margin-top: 4px;
+  font-size: 12px;
   line-height: 1.2;
 }
 
 /* ------------------------------
-   家具タイル（グリッド）
+   家具タイル（元の縦スクロール）
 ------------------------------ */
-#furnitureGrid {
-  padding: 12px;
+#furniturePanel {
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.furniture-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
 }
 
 .furniture-tile {
-  background: #1e293b;
+  background: #334155;
   border-radius: 6px;
-  border: 1px solid #334155;
+  border: 1px solid #475569;
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -103,13 +101,7 @@ header .sub {
   height: 40px;
   border-radius: 4px;
   object-fit: cover;
-  background: #334155;
-}
-
-.furniture-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  background: #475569;
 }
 
 .furniture-name {
@@ -131,54 +123,48 @@ header .sub {
 .furniture-footer input {
   width: 50px;
   background: #0f172a;
-  border: 1px solid #475569;
+  border: 1px solid #64748b;
   border-radius: 4px;
   color: #e2e8f0;
-  padding: 2px 4px;
 }
 
 /* ------------------------------
-   設定パネル（折りたたみ）
+   設定パネル（元の形式）
 ------------------------------ */
 #settingsPanel {
-  background: #020617;
-  border-top: 1px solid #1e293b;
-  padding: 10px 12px;
-}
-
-#settingsContent {
-  margin-top: 8px;
-  display: none;
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 10px;
 }
 
 .settings-row {
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .settings-row input {
   width: 60px;
   background: #0f172a;
-  border: 1px solid #475569;
+  border: 1px solid #64748b;
   border-radius: 4px;
   color: #e2e8f0;
   padding: 2px 4px;
 }
 
 /* ------------------------------
-   結果パネル（画面下固定）
+   結果パネル（元の縦リスト）
 ------------------------------ */
 #resultPanel {
-  position: sticky;
-  bottom: 0;
-  background: #0f172a;
-  border-top: 1px solid #1e293b;
-  padding: 10px 12px;
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
 }
 
 .result-item {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: #334155;
+  border: 1px solid #475569;
   border-radius: 6px;
   padding: 6px;
   margin-bottom: 6px;
@@ -190,11 +176,11 @@ header .sub {
 }
 
 .result-name {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .result-score {
-  font-size: 12px;
+  font-size: 13px;
   color: #a5b4fc;
 }
 
@@ -207,24 +193,24 @@ header .sub {
 
 <body>
 
-<header>
-  <h1>GoodCafe 配置ツール（強化タイルUI）</h1>
-  <div class="sub">キャラ × 家具 × 所持数 × レアリティで優先度を自動計算</div>
-</header>
+<h2 style="padding:10px; margin:0;">GoodCafe 配置ツール（元のタイル版）</h2>
 
-<!-- キャラタイル（横スクロール） -->
-<div id="characterBar"></div>
+<div id="container">
 
-<!-- 家具タイル -->
-<div id="furnitureGrid"></div>
-
-<!-- 設定パネル -->
-<div id="settingsPanel">
-  <div id="settingsToggle" style="cursor:pointer; font-size:13px;">
-    ▼ 設定（クリックで開閉）
+  <!-- キャラ -->
+  <div id="characterPanel">
+    <div style="font-size:14px; margin-bottom:6px;">育成したいキャラ</div>
+    <div class="char-grid" id="characterGrid"></div>
   </div>
 
-  <div id="settingsContent">
+  <!-- 家具 -->
+  <div id="furniturePanel">
+    <div style="font-size:14px; margin-bottom:6px;">家具の所持数</div>
+    <div class="furniture-grid" id="furnitureGrid"></div>
+  </div>
+
+  <!-- 設定 -->
+  <div id="settingsPanel">
     <div class="settings-row">
       製造可能数：  
       ★1 <input id="make1" type="number" min="0" value="0">　
@@ -236,13 +222,24 @@ header .sub {
       カフェ空きスペース：  
       <input id="cafeSpace" type="number" min="0" value="0">
     </div>
-  </div>
-</div>
 
-<!-- 結果パネル -->
-<div id="resultPanel">
-  <div style="font-size:13px; margin-bottom:6px;">優先度（リアルタイム更新）</div>
-  <div id="resultList"></div>
+    <button id="calcBtn" style="
+      margin-top:10px;
+      padding:6px 12px;
+      background:#0ea5e9;
+      border:none;
+      border-radius:4px;
+      color:white;
+      cursor:pointer;
+    ">計算する</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="resultPanel">
+    <div style="font-size:14px; margin-bottom:6px;">結果</div>
+    <div id="resultList"></div>
+  </div>
+
 </div>
 
 <!-- データ読み込み -->
@@ -250,9 +247,9 @@ header .sub {
 
 <script>
 /* ============================================================
-   キャラタイル生成
+   キャラタイル生成（元の縦スクロール）
 ============================================================ */
-const characterBar = document.getElementById("characterBar");
+const characterGrid = document.getElementById("characterGrid");
 const selectedCharacters = new Set();
 
 characters.forEach(c => {
@@ -260,11 +257,7 @@ characters.forEach(c => {
   div.className = "char-tile";
   div.dataset.id = c.id;
 
-  div.innerHTML = `
-    <img src="./images/characters/${c.name}.png"
-         onerror="this.src='./images/characters/dummy.png'">
-    <div class="char-name">${c.name}</div>
-  `;
+  div.innerHTML = `<div class="char-name">${c.name}</div>`;
 
   div.addEventListener("click", () => {
     if (selectedCharacters.has(c.id)) {
@@ -274,14 +267,13 @@ characters.forEach(c => {
       selectedCharacters.add(c.id);
       div.classList.add("selected");
     }
-    recalc();
   });
 
-  characterBar.appendChild(div);
+  characterGrid.appendChild(div);
 });
 
 /* ============================================================
-   家具タイル生成
+   家具タイル生成（元の縦スクロール）
 ============================================================ */
 const furnitureGrid = document.getElementById("furnitureGrid");
 const furnitureCount = new Map();
@@ -295,9 +287,8 @@ furnitures.forEach(f => {
 
   div.innerHTML = `
     <div class="furniture-header">
-      <img src="${imgPath}"
-           onerror="this.src='./images/furniture_dummy/dummy.png'">
-      <div class="furniture-meta">
+      <img src="${imgPath}" onerror="this.src='./images/furniture_dummy/dummy.png'">
+      <div>
         <div class="furniture-name">${f.name}</div>
         <div class="furniture-rarity">${rarityStars}</div>
       </div>
@@ -312,26 +303,15 @@ furnitures.forEach(f => {
   const input = div.querySelector("input");
   input.addEventListener("input", () => {
     furnitureCount.set(f.id, Number(input.value));
-    recalc();
   });
 
   furnitureGrid.appendChild(div);
 });
 
 /* ============================================================
-   設定パネル開閉
+   計算ボタン → 結果表示（元の形式）
 ============================================================ */
-document.getElementById("settingsToggle").addEventListener("click", () => {
-  const c = document.getElementById("settingsContent");
-  c.style.display = c.style.display === "block" ? "none" : "block";
-});
-
-/* ============================================================
-   優先度計算（簡易版）
-============================================================ */
-const resultList = document.getElementById("resultList");
-
-function recalc() {
+document.getElementById("calcBtn").addEventListener("click", () => {
   const make1 = Number(document.getElementById("make1").value);
   const make2 = Number(document.getElementById("make2").value);
   const make3 = Number(document.getElementById("make3").value);
@@ -342,11 +322,9 @@ function recalc() {
     const count = furnitureCount.get(f.id) || 0;
     if (count === 0) return;
 
-    // 対応キャラ数
     const related = furnitureCharacterMap.filter(x => x.furnitureId === f.id);
     const matchCount = related.filter(x => selectedCharacters.has(x.characterId)).length;
 
-    // 製造可能数補正
     const makeBonus = (f.rarity === 1 ? make1 : f.rarity === 2 ? make2 : make3);
 
     const score = (matchCount * 10) + (f.rarity * 3) + (count * 2) + makeBonus;
@@ -362,7 +340,9 @@ function recalc() {
 
   results.sort((a, b) => b.score - a.score);
 
+  const resultList = document.getElementById("resultList");
   resultList.innerHTML = "";
+
   results.forEach(r => {
     const div = document.createElement("div");
     div.className = "result-item";
@@ -379,9 +359,7 @@ function recalc() {
 
     resultList.appendChild(div);
   });
-}
-
-recalc();
+});
 </script>
 
 </body>
