@@ -1,463 +1,388 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>GoodCafe 配置ツール</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<title>GoodCafe 配置ツール - タイルUI強化版</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #111827;
-      color: #e5e7eb;
-    }
+<style>
+/* ------------------------------
+   基本レイアウト
+------------------------------ */
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: system-ui, sans-serif;
+}
 
-    header {
-      padding: 12px 16px;
-      background: #020617;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+header {
+  padding: 12px 16px;
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+}
 
-    header h1 {
-      font-size: 18px;
-      margin: 0;
-    }
+header h1 {
+  margin: 0;
+  font-size: 18px;
+}
 
-    header .sub {
-      font-size: 12px;
-      color: #9ca3af;
-    }
+header .sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
 
-    main {
-      padding: 12px 16px 32px;
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
-      gap: 16px;
-    }
+/* ------------------------------
+   キャラタイル（横スクロール）
+------------------------------ */
+#characterBar {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
+}
 
-    @media (max-width: 960px) {
-      main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
+.char-tile {
+  min-width: 80px;
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #334155;
+}
 
-    .panel {
-      background: #020617;
-      border-radius: 8px;
-      border: 1px solid #1f2937;
-      padding: 10px 12px 12px;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+.char-tile.selected {
+  border-color: #38bdf8;
+  background: #0ea5e9;
+}
 
-    .panel-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
+.char-tile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #334155;
+}
 
-    .panel-title span.sub {
-      font-size: 11px;
-      color: #9ca3af;
-      font-weight: 400;
-    }
+.char-name {
+  font-size: 11px;
+  margin-top: 4px;
+  line-height: 1.2;
+}
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      font-size: 11px;
-      color: #9ca3af;
-    }
+/* ------------------------------
+   家具タイル（グリッド）
+------------------------------ */
+#furnitureGrid {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
 
-    .toolbar label {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+.furniture-tile {
+  background: #1e293b;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-    .toolbar input[type="number"],
-    .toolbar select {
-      background: #020617;
-      border: 1px solid #374151;
-      border-radius: 4px;
-      color: #e5e7eb;
-      font-size: 11px;
-      padding: 2px 4px;
-      height: 22px;
-    }
+.furniture-header {
+  display: flex;
+  gap: 6px;
+}
 
-    .toolbar button {
-      background: #111827;
-      border-radius: 4px;
-      border: 1px solid #374151;
-      color: #e5e7eb;
-      font-size: 11px;
-      padding: 2px 8px;
-      cursor: pointer;
-    }
+.furniture-header img {
+  width: 60px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #334155;
+}
 
-    .toolbar button:hover {
-      background: #1f2937;
-    }
+.furniture-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-    .grid {
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #111827;
-      background: #020617;
-      padding: 6px;
-      overflow: auto;
-      max-height: calc(100vh - 220px);
-    }
+.furniture-name {
+  font-size: 12px;
+  line-height: 1.2;
+}
 
-    .furniture-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 6px;
-    }
+.furniture-rarity {
+  font-size: 11px;
+  color: #fbbf24;
+}
 
-    .furniture-tile {
-      background: #020617;
-      border-radius: 6px;
-      border: 1px solid #111827;
-      padding: 4px 4px 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 11px;
-    }
+.furniture-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .furniture-header {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
+.furniture-footer input {
+  width: 50px;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #e2e8f0;
+  padding: 2px 4px;
+}
 
-    .furniture-header img {
-      width: 60px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 4px;
-      background: #111827;
-      flex-shrink: 0;
-    }
+/* ------------------------------
+   設定パネル（折りたたみ）
+------------------------------ */
+#settingsPanel {
+  background: #020617;
+  border-top: 1px solid #1e293b;
+  padding: 10px 12px;
+}
 
-    .furniture-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
+#settingsContent {
+  margin-top: 8px;
+  display: none;
+}
 
-    .furniture-name {
-      font-size: 11px;
-      color: #e5e7eb;
-      line-height: 1.3;
-      word-break: break-all;
-    }
+.settings-row {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
 
-    .furniture-rarity {
-      font-size: 10px;
-      color: #fbbf24;
-    }
+.settings-row input {
+  width: 60px;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #e2e8f0;
+  padding: 2px 4px;
+}
 
-    .furniture-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 4px;
-      margin-top: 2px;
-    }
+/* ------------------------------
+   結果パネル（画面下固定）
+------------------------------ */
+#resultPanel {
+  position: sticky;
+  bottom: 0;
+  background: #0f172a;
+  border-top: 1px solid #1e293b;
+  padding: 10px 12px;
+}
 
-    .furniture-footer input[type="number"] {
-      width: 52px;
-      background: #020617;
-      border: 1px solid #374151;
-      border-radius: 4px;
-      color: #e5e7eb;
-      font-size: 11px;
-      padding: 2px 4px;
-      height: 22px;
-    }
+.result-item {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 6px;
+}
 
-    .furniture-footer span.label {
-      font-size: 10px;
-      color: #9ca3af;
-    }
+.result-main {
+  display: flex;
+  justify-content: space-between;
+}
 
-    .result-list {
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-height: calc(100vh - 220px);
-      overflow: auto;
-    }
+.result-name {
+  font-size: 12px;
+}
 
-    .result-item {
-      border-radius: 6px;
-      border: 1px solid #111827;
-      background: #020617;
-      padding: 4px 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+.result-score {
+  font-size: 12px;
+  color: #a5b4fc;
+}
 
-    .result-main {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: baseline;
-    }
-
-    .result-main .name {
-      font-size: 11px;
-      color: #e5e7eb;
-    }
-
-    .result-main .score {
-      font-size: 11px;
-      color: #a5b4fc;
-    }
-
-    .result-sub {
-      font-size: 10px;
-      color: #9ca3af;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      padding: 0 4px;
-      border-radius: 999px;
-      border: 1px solid #374151;
-      font-size: 10px;
-      color: #9ca3af;
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-  </style>
+.result-sub {
+  font-size: 11px;
+  color: #94a3b8;
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div>
-      <h1>GoodCafe 配置ツール</h1>
-      <div class="sub">家具 × キャラ対応を考慮した優先度確認用（試作版）</div>
+
+<header>
+  <h1>GoodCafe 配置ツール（強化タイルUI）</h1>
+  <div class="sub">キャラ × 家具 × 所持数 × レアリティで優先度を自動計算</div>
+</header>
+
+<!-- キャラタイル（横スクロール） -->
+<div id="characterBar"></div>
+
+<!-- 家具タイル -->
+<div id="furnitureGrid"></div>
+
+<!-- 設定パネル -->
+<div id="settingsPanel">
+  <div id="settingsToggle" style="cursor:pointer; font-size:13px;">
+    ▼ 設定（クリックで開閉）
+  </div>
+
+  <div id="settingsContent">
+    <div class="settings-row">
+      製造可能数：  
+      ★1 <input id="make1" type="number" min="0" value="0">　
+      ★2 <input id="make2" type="number" min="0" value="0">　
+      ★3 <input id="make3" type="number" min="0" value="0">
     </div>
-    <div class="sub">
-      画像: <code>/images/furniture/家具名.png</code>（ID1〜117） / それ以外はダミー表示
+
+    <div class="settings-row">
+      カフェ空きスペース：  
+      <input id="cafeSpace" type="number" min="0" value="0">
     </div>
-  </header>
+  </div>
+</div>
 
-  <main>
-    <!-- 左：家具一覧 -->
-    <section class="panel">
-      <div class="panel-title">
-        <span>家具一覧</span>
-        <span class="sub">所持数を入力すると右側の優先度が更新されます</span>
-      </div>
+<!-- 結果パネル -->
+<div id="resultPanel">
+  <div style="font-size:13px; margin-bottom:6px;">優先度（リアルタイム更新）</div>
+  <div id="resultList"></div>
+</div>
 
-      <div class="toolbar">
-        <label>
-          レアリティ:
-          <select id="rarityFilter">
-            <option value="all">すべて</option>
-            <option value="3">★3のみ</option>
-            <option value="2">★2のみ</option>
-            <option value="1">★1のみ</option>
-          </select>
-        </label>
-        <label>
-          名前検索:
-          <input type="text" id="nameFilter" placeholder="家具名の一部" />
-        </label>
-        <button id="clearFilterBtn">フィルタ解除</button>
-      </div>
+<!-- データ読み込み -->
+<script src="./data.js"></script>
 
-      <div class="grid">
-        <div id="furnitureGrid" class="furniture-grid"></div>
-      </div>
-    </section>
+<script>
+/* ============================================================
+   キャラタイル生成
+============================================================ */
+const characterBar = document.getElementById("characterBar");
+const selectedCharacters = new Set();
 
-    <!-- 右：優先度結果（ダミー計算） -->
-    <section class="panel">
-      <div class="panel-title">
-        <span>優先度（仮ロジック）</span>
-        <span class="sub">レアリティ × 所持数から簡易スコアを計算中</span>
-      </div>
+characters.forEach(c => {
+  const div = document.createElement("div");
+  div.className = "char-tile";
+  div.dataset.id = c.id;
 
-      <div class="toolbar">
-        <span class="badge">
-          <span class="badge-dot"></span>
-          スコア = レアリティ × 所持数
-        </span>
-        <button id="recalcBtn">再計算</button>
-      </div>
+  div.innerHTML = `
+    <img src="./images/characters/${c.name}.png"
+         onerror="this.src='./images/characters/dummy.png'">
+    <div class="char-name">${c.name}</div>
+  `;
 
-      <div class="result-list" id="resultList"></div>
-    </section>
-  </main>
-
-  <!-- データ定義（characters / furnitures / furnitureCharacterMap） -->
-  <script src="./data.js"></script>
-
-  <script>
-    // --- 簡易ロジック：UI と計算を分離しつつ index.html 内にまとめた版 ---
-
-    // DOM 取得
-    const furnitureGrid = document.getElementById("furnitureGrid");
-    const resultList = document.getElementById("resultList");
-    const rarityFilter = document.getElementById("rarityFilter");
-    const nameFilter = document.getElementById("nameFilter");
-    const clearFilterBtn = document.getElementById("clearFilterBtn");
-    const recalcBtn = document.getElementById("recalcBtn");
-
-    // 家具ID → 所持数
-    const furnitureCountMap = new Map();
-
-    // 初期描画
-    function renderFurnitureGrid() {
-      furnitureGrid.innerHTML = "";
-
-      const rarityValue = rarityFilter.value;
-      const nameValue = nameFilter.value.trim();
-
-      furnitures.forEach(f => {
-        // フィルタ
-        if (rarityValue !== "all" && String(f.rarity) !== rarityValue) return;
-        if (nameValue && !f.name.includes(nameValue)) return;
-
-        const div = document.createElement("div");
-        div.className = "furniture-tile";
-
-        const imgPath = `./images/furniture/${f.name}.png`;
-
-        const rarityStars = "★".repeat(f.rarity);
-
-        const count = furnitureCountMap.get(f.id) ?? 0;
-
-        div.innerHTML = `
-          <div class="furniture-header">
-            <img src="${imgPath}"
-                 alt="${f.name}"
-                 onerror="this.onerror=null; this.src='./images/furniture_dummy/dummy.png';" />
-            <div class="furniture-meta">
-              <div class="furniture-name">${f.name}</div>
-              <div class="furniture-rarity">${rarityStars}</div>
-            </div>
-          </div>
-          <div class="furniture-footer">
-            <span class="label">所持数</span>
-            <input type="number" min="0" value="${count}" data-furniture-id="${f.id}" />
-          </div>
-        `;
-
-        const input = div.querySelector("input[type='number']");
-        input.addEventListener("change", () => {
-          const v = Number(input.value) || 0;
-          furnitureCountMap.set(f.id, v);
-          recalcAndRenderResult();
-        });
-
-        furnitureGrid.appendChild(div);
-      });
+  div.addEventListener("click", () => {
+    if (selectedCharacters.has(c.id)) {
+      selectedCharacters.delete(c.id);
+      div.classList.remove("selected");
+    } else {
+      selectedCharacters.add(c.id);
+      div.classList.add("selected");
     }
+    recalc();
+  });
 
-    // 簡易スコア計算（本格ロジックは別ファイルに切り出し予定）
-    function recalcAndRenderResult() {
-      const results = [];
+  characterBar.appendChild(div);
+});
 
-      furnitures.forEach(f => {
-        const count = furnitureCountMap.get(f.id) ?? 0;
-        if (count <= 0) return;
+/* ============================================================
+   家具タイル生成
+============================================================ */
+const furnitureGrid = document.getElementById("furnitureGrid");
+const furnitureCount = new Map();
 
-        const score = f.rarity * count; // 仮ロジック
+furnitures.forEach(f => {
+  const div = document.createElement("div");
+  div.className = "furniture-tile";
 
-        results.push({
-          id: f.id,
-          name: f.name,
-          rarity: f.rarity,
-          count,
-          score,
-        });
-      });
+  const imgPath = `./images/furniture/${f.name}.png`;
+  const rarityStars = "★".repeat(f.rarity);
 
-      results.sort((a, b) => b.score - a.score);
+  div.innerHTML = `
+    <div class="furniture-header">
+      <img src="${imgPath}"
+           onerror="this.src='./images/furniture_dummy/dummy.png'">
+      <div class="furniture-meta">
+        <div class="furniture-name">${f.name}</div>
+        <div class="furniture-rarity">${rarityStars}</div>
+      </div>
+    </div>
 
-      resultList.innerHTML = "";
+    <div class="furniture-footer">
+      <span style="font-size:11px;">所持</span>
+      <input type="number" min="0" value="0" data-id="${f.id}">
+    </div>
+  `;
 
-      results.forEach(r => {
-        const item = document.createElement("div");
-        item.className = "result-item";
+  const input = div.querySelector("input");
+  input.addEventListener("input", () => {
+    furnitureCount.set(f.id, Number(input.value));
+    recalc();
+  });
 
-        const rarityStars = "★".repeat(r.rarity);
+  furnitureGrid.appendChild(div);
+});
 
-        item.innerHTML = `
-          <div class="result-main">
-            <div class="name">${r.name}</div>
-            <div class="score">スコア: ${r.score}</div>
-          </div>
-          <div class="result-sub">
-            レアリティ: ${rarityStars} / 所持数: ${r.count}
-          </div>
-        `;
+/* ============================================================
+   設定パネル開閉
+============================================================ */
+document.getElementById("settingsToggle").addEventListener("click", () => {
+  const c = document.getElementById("settingsContent");
+  c.style.display = c.style.display === "block" ? "none" : "block";
+});
 
-        resultList.appendChild(item);
-      });
+/* ============================================================
+   優先度計算（簡易版）
+============================================================ */
+const resultList = document.getElementById("resultList");
 
-      if (results.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "result-item";
-        empty.innerHTML = `
-          <div class="result-sub">所持数が入力された家具がありません。</div>
-        `;
-        resultList.appendChild(empty);
-      }
-    }
+function recalc() {
+  const make1 = Number(document.getElementById("make1").value);
+  const make2 = Number(document.getElementById("make2").value);
+  const make3 = Number(document.getElementById("make3").value);
 
-    // イベント
-    rarityFilter.addEventListener("change", () => {
-      renderFurnitureGrid();
+  const results = [];
+
+  furnitures.forEach(f => {
+    const count = furnitureCount.get(f.id) || 0;
+    if (count === 0) return;
+
+    // 対応キャラ数
+    const related = furnitureCharacterMap.filter(x => x.furnitureId === f.id);
+    const matchCount = related.filter(x => selectedCharacters.has(x.characterId)).length;
+
+    // 製造可能数補正
+    const makeBonus = (f.rarity === 1 ? make1 : f.rarity === 2 ? make2 : make3);
+
+    const score = (matchCount * 10) + (f.rarity * 3) + (count * 2) + makeBonus;
+
+    results.push({
+      name: f.name,
+      rarity: f.rarity,
+      count,
+      matchCount,
+      score
     });
+  });
 
-    nameFilter.addEventListener("input", () => {
-      renderFurnitureGrid();
-    });
+  results.sort((a, b) => b.score - a.score);
 
-    clearFilterBtn.addEventListener("click", () => {
-      rarityFilter.value = "all";
-      nameFilter.value = "";
-      renderFurnitureGrid();
-    });
+  resultList.innerHTML = "";
+  results.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "result-item";
 
-    recalcBtn.addEventListener("click", () => {
-      recalcAndRenderResult();
-    });
+    div.innerHTML = `
+      <div class="result-main">
+        <div class="result-name">${r.name}</div>
+        <div class="result-score">${r.score}</div>
+      </div>
+      <div class="result-sub">
+        対応キャラ: ${r.matchCount} / 所持: ${r.count} / ★${r.rarity}
+      </div>
+    `;
 
-    // 初期化
-    renderFurnitureGrid();
-    recalcAndRenderResult();
-  </script>
+    resultList.appendChild(div);
+  });
+}
+
+recalc();
+</script>
+
 </body>
 </html>
