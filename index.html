@@ -1,41 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>育成支援ツール（プロトタイプ）</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>育成支援ツール（1画面プロトタイプ）</title>
 <style>
-  body { font-family: sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-  .screen { display: none; padding: 20px; }
-  .active { display: block; }
-  h2 { margin-top: 0; }
-  .btn { padding: 10px 16px; background: #007bff; color: white; border-radius: 6px; display: inline-block; margin-top: 20px; cursor: pointer; }
-  .card { background: white; padding: 12px; margin: 10px 0; border-radius: 8px; }
-  .char-item, .furniture-item { padding: 10px; background: white; margin: 8px 0; border-radius: 6px; cursor: pointer; }
+  body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
+  h2 { margin: 10px 0; }
+  .container { padding: 16px; }
+  .section { background: white; padding: 12px; margin-bottom: 16px; border-radius: 8px; }
+  .char-item, .furniture-item { padding: 8px; background: #fafafa; margin: 6px 0; border-radius: 6px; cursor: pointer; }
   .selected { border: 2px solid #007bff; }
+  .btn { padding: 10px 16px; background: #007bff; color: white; border-radius: 6px; display: inline-block; cursor: pointer; margin-top: 10px; }
+  .result-card { background: white; padding: 12px; margin: 10px 0; border-radius: 8px; }
 </style>
 </head>
 <body>
 
-<!-- 画面1：キャラ選択 -->
-<div id="screen1" class="screen active">
-  <h2>① 育成したいキャラを選択</h2>
-  <div id="charList"></div>
-  <div class="btn" onclick="goToScreen(2)">次へ</div>
-</div>
+<div class="container">
 
-<!-- 画面2：家具入力 -->
-<div id="screen2" class="screen">
-  <h2>② 家具の所持数・製造可能数を入力</h2>
-  <div id="furnitureList"></div>
-  <div class="btn" onclick="goToScreen(3)">計算する（ダミー）</div>
-</div>
+  <!-- キャラ選択 -->
+  <div class="section">
+    <h2>① 育成したいキャラを選択</h2>
+    <div id="charList"></div>
+  </div>
 
-<!-- 画面3：結果表示 -->
-<div id="screen3" class="screen">
-  <h2>③ 優先順位リスト（ダミー）</h2>
-  <div id="resultList"></div>
-  <div class="btn" onclick="goToScreen(1)">最初に戻る</div>
+  <!-- 家具所持数 -->
+  <div class="section">
+    <h2>② 家具の所持数</h2>
+    <div id="furnitureList"></div>
+  </div>
+
+  <!-- ランク別製造可能数 -->
+  <div class="section">
+    <h2>③ ランク別の製造可能数</h2>
+    <div>
+      初級：<input id="rank1" type="number" value="0" min="0" style="width:60px;"><br>
+      中級：<input id="rank2" type="number" value="0" min="0" style="width:60px;"><br>
+      上級：<input id="rank3" type="number" value="0" min="0" style="width:60px;"><br>
+      最上級：<input id="rank4" type="number" value="0" min="0" style="width:60px;"><br>
+    </div>
+  </div>
+
+  <!-- カフェ空きスペース -->
+  <div class="section">
+    <h2>④ カフェの空きスペース</h2>
+    幅：<input id="cafeW" type="number" value="10" min="1" style="width:60px;">
+    高さ：<input id="cafeH" type="number" value="10" min="1" style="width:60px;">
+  </div>
+
+  <!-- 計算ボタン -->
+  <div class="section">
+    <div class="btn" onclick="calculate()">計算する（ダミー）</div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="section">
+    <h2>⑤ 優先順位リスト（ダミー）</h2>
+    <div id="resultList"></div>
+  </div>
+
 </div>
 
 <script>
@@ -57,15 +81,7 @@ const furnitures = [
 ];
 
 // -----------------------------
-// 画面遷移
-// -----------------------------
-function goToScreen(n) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById("screen" + n).classList.add("active");
-}
-
-// -----------------------------
-// キャラ一覧の描画
+// キャラ一覧
 // -----------------------------
 const charList = document.getElementById("charList");
 characters.forEach(c => {
@@ -77,7 +93,7 @@ characters.forEach(c => {
 });
 
 // -----------------------------
-// 家具一覧の描画（ダミー）
+// 家具所持数
 // -----------------------------
 const furnitureList = document.getElementById("furnitureList");
 furnitures.forEach(f => {
@@ -86,30 +102,33 @@ furnitures.forEach(f => {
   div.innerHTML = `
     <strong>${f.name}</strong><br>
     所持数：<input type="number" value="0" min="0" style="width:60px;">
-    製造可能：<input type="number" value="0" min="0" style="width:60px;">
   `;
   furnitureList.appendChild(div);
 });
 
 // -----------------------------
-// 結果（ダミー）
+// ダミー計算
 // -----------------------------
-const resultList = document.getElementById("resultList");
-const dummyResults = [
-  { rank: 1, name: "黄金の像（最上級）", score: 95 },
-  { rank: 2, name: "高級テーブル（上級）", score: 80 },
-  { rank: 3, name: "大きなソファ（中級）", score: 60 },
-];
+function calculate() {
+  const resultList = document.getElementById("resultList");
+  resultList.innerHTML = ""; // 初期化
 
-dummyResults.forEach(r => {
-  const div = document.createElement("div");
-  div.className = "card";
-  div.innerHTML = `
-    <strong>#${r.rank}：${r.name}</strong><br>
-    スコア：${r.score}
-  `;
-  resultList.appendChild(div);
-});
+  const dummyResults = [
+    { rank: 1, name: "黄金の像（最上級）", score: 95 },
+    { rank: 2, name: "高級テーブル（上級）", score: 80 },
+    { rank: 3, name: "大きなソファ（中級）", score: 60 },
+  ];
+
+  dummyResults.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "result-card";
+    div.innerHTML = `
+      <strong>#${r.rank}：${r.name}</strong><br>
+      スコア：${r.score}
+    `;
+    resultList.appendChild(div);
+  });
+}
 </script>
 
 </body>
