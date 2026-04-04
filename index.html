@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>育成支援ツール（プロトタイプ）</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+  .screen { display: none; padding: 20px; }
+  .active { display: block; }
+  h2 { margin-top: 0; }
+  .btn { padding: 10px 16px; background: #007bff; color: white; border-radius: 6px; display: inline-block; margin-top: 20px; cursor: pointer; }
+  .card { background: white; padding: 12px; margin: 10px 0; border-radius: 8px; }
+  .char-item, .furniture-item { padding: 10px; background: white; margin: 8px 0; border-radius: 6px; cursor: pointer; }
+  .selected { border: 2px solid #007bff; }
+</style>
+</head>
+<body>
+
+<!-- 画面1：キャラ選択 -->
+<div id="screen1" class="screen active">
+  <h2>① 育成したいキャラを選択</h2>
+  <div id="charList"></div>
+  <div class="btn" onclick="goToScreen(2)">次へ</div>
+</div>
+
+<!-- 画面2：家具入力 -->
+<div id="screen2" class="screen">
+  <h2>② 家具の所持数・製造可能数を入力</h2>
+  <div id="furnitureList"></div>
+  <div class="btn" onclick="goToScreen(3)">計算する（ダミー）</div>
+</div>
+
+<!-- 画面3：結果表示 -->
+<div id="screen3" class="screen">
+  <h2>③ 優先順位リスト（ダミー）</h2>
+  <div id="resultList"></div>
+  <div class="btn" onclick="goToScreen(1)">最初に戻る</div>
+</div>
+
+<script>
+// -----------------------------
+// ダミーデータ
+// -----------------------------
+const characters = [
+  { id: 1, name: "アコ" },
+  { id: 2, name: "ヒナ" },
+  { id: 3, name: "トキ" },
+  { id: 4, name: "アズサ" },
+];
+
+const furnitures = [
+  { id: 1, name: "ぬいぐるみ（初級）" },
+  { id: 2, name: "大きなソファ（中級）" },
+  { id: 3, name: "高級テーブル（上級）" },
+  { id: 4, name: "黄金の像（最上級）" },
+];
+
+// -----------------------------
+// 画面遷移
+// -----------------------------
+function goToScreen(n) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen" + n).classList.add("active");
+}
+
+// -----------------------------
+// キャラ一覧の描画
+// -----------------------------
+const charList = document.getElementById("charList");
+characters.forEach(c => {
+  const div = document.createElement("div");
+  div.className = "char-item";
+  div.textContent = c.name;
+  div.onclick = () => div.classList.toggle("selected");
+  charList.appendChild(div);
+});
+
+// -----------------------------
+// 家具一覧の描画（ダミー）
+// -----------------------------
+const furnitureList = document.getElementById("furnitureList");
+furnitures.forEach(f => {
+  const div = document.createElement("div");
+  div.className = "furniture-item";
+  div.innerHTML = `
+    <strong>${f.name}</strong><br>
+    所持数：<input type="number" value="0" min="0" style="width:60px;">
+    製造可能：<input type="number" value="0" min="0" style="width:60px;">
+  `;
+  furnitureList.appendChild(div);
+});
+
+// -----------------------------
+// 結果（ダミー）
+// -----------------------------
+const resultList = document.getElementById("resultList");
+const dummyResults = [
+  { rank: 1, name: "黄金の像（最上級）", score: 95 },
+  { rank: 2, name: "高級テーブル（上級）", score: 80 },
+  { rank: 3, name: "大きなソファ（中級）", score: 60 },
+];
+
+dummyResults.forEach(r => {
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <strong>#${r.rank}：${r.name}</strong><br>
+    スコア：${r.score}
+  `;
+  resultList.appendChild(div);
+});
+</script>
+
+</body>
+</html>
