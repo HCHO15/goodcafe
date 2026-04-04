@@ -81,11 +81,19 @@ const furnitureGrid = document.getElementById("furnitureGrid");
 furnitures.forEach(f => {
   const div = document.createElement("div");
   div.className = "furniture-tile";
+
+  // 画像パス（家具名.png）
+  const imgPath = `./images/${f.name}.png`;
+
   div.innerHTML = `
-    <div class="dummy-img"></div>
-    ${f.name}<br>
-    <input type="number" value="0" min="0" style="width:60px;">
+    <img src="${imgPath}" 
+         alt="${f.name}" 
+         style="width:60px; height:40px; object-fit:cover; border-radius:4px; background:#ccc;"
+         onerror="this.onerror=null; this.src='./images/dummy.png';">
+    <div style="font-size:12px; margin-top:4px;">${f.name}</div>
+    <input type="number" value="0" min="0" style="width:60px; margin-top:4px;">
   `;
+
   furnitureGrid.appendChild(div);
 });
 
