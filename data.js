@@ -98,7 +98,7 @@ const furnitures = [
   { id: 97, name: "モンステラの白い植木鉢", rarity: 1 },
   { id: 98, name: "簡易更衣室", rarity: 3 },
   { id: 99, name: "デパートのデザイナーソファ", rarity: 1 },
-  { id: 100, name: "カラフルな大型プール", rarity: 3 }
+  { id: 100, name: "カラフルな大型プール", rarity: 3 },
   { id: 101, name: "レースゲーム機", rarity: 3 },
   { id: 102, name: "カウンターチェア・ディープブルー", rarity: 1 },
   { id: 103, name: "ゲーム開発部のスペース", rarity: 3 },
