@@ -606,3 +606,11 @@ const furnitureToCharacters = {
   190: [218],
   191: [219]
 };
+
+const furnitureCharacterMap = Object.entries(furnitureToCharacters).flatMap(
+  ([furnitureId, characterIds]) =>
+    characterIds.map(characterId => ({
+      furnitureId: Number(furnitureId),
+      characterId
+    }))
+);
