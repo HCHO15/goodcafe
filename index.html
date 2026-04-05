@@ -205,9 +205,16 @@ body {
 
   <!-- 家具 -->
   <div id="furniturePanel">
-    <div style="font-size:14px; margin-bottom:6px;">家具の所持数</div>
-    <div class="furniture-grid" id="furnitureGrid"></div>
+  <div style="font-size:14px; margin-bottom:6px;">
+    家具の所持数　
+    <select id="sortFurniture">
+      <option value="default">デフォルト順</option>
+      <option value="rarity">レアリティ順</option>
+      <option value="name">名前順</option>
+    </select>
   </div>
+  <div class="furniture-grid" id="furnitureGrid"></div>
+</div>
 
   <!-- 設定 -->
   <div id="settingsPanel">
@@ -278,35 +285,39 @@ characters.forEach(c => {
 const furnitureGrid = document.getElementById("furnitureGrid");
 const furnitureCount = new Map();
 
-furnitures.forEach(f => {
-  const div = document.createElement("div");
-  div.className = "furniture-tile";
+function renderFurnitureList(list) {
+  furnitureGrid.innerHTML = "";
 
-  const imgPath = `./images/furniture/${f.name}.png`;
-  const rarityStars = "★".repeat(f.rarity);
+  list.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "furniture-tile";
 
-  div.innerHTML = `
-    <div class="furniture-header">
-      <img src="${imgPath}" onerror="this.src='./images/furniture_dummy/dummy.png'">
-      <div>
-        <div class="furniture-name">${f.name}</div>
-        <div class="furniture-rarity">${rarityStars}</div>
+    const imgPath = `./images/furniture/${f.name}.png`;
+    const rarityStars = "★".repeat(f.rarity);
+
+    div.innerHTML = `
+      <div class="furniture-header">
+        <img src="${imgPath}" onerror="this.src='./images/furniture_dummy/dummy.png'">
+        <div>
+          <div class="furniture-name">${f.name}</div>
+          <div class="furniture-rarity">${rarityStars}</div>
+        </div>
       </div>
-    </div>
 
-    <div class="furniture-footer">
-      <span style="font-size:11px;">所持</span>
-      <input type="number" min="0" value="0" data-id="${f.id}">
-    </div>
-  `;
+      <div class="furniture-footer">
+        <span style="font-size:11px;">所持</span>
+        <input type="number" min="0" value="0" data-id="${f.id}">
+      </div>
+    `;
 
-  const input = div.querySelector("input");
-  input.addEventListener("input", () => {
-    furnitureCount.set(f.id, Number(input.value));
+    const input = div.querySelector("input");
+    input.addEventListener("input", () => {
+      furnitureCount.set(f.id, Number(input.value));
+    });
+
+    furnitureGrid.appendChild(div);
   });
-
-  furnitureGrid.appendChild(div);
-});
+}
 
 /* ============================================================
    計算ボタン → 結果表示（元の形式）
@@ -318,25 +329,7 @@ document.getElementById("calcBtn").addEventListener("click", () => {
 
   const results = [];
 
-  furnitures.forEach(f => {
-    const count = furnitureCount.get(f.id) || 0;
-    if (count === 0) return;
-
-    const related = furnitureCharacterMap.filter(x => x.furnitureId === f.id);
-    const matchCount = related.filter(x => selectedCharacters.has(x.characterId)).length;
-
-    const makeBonus = (f.rarity === 1 ? make1 : f.rarity === 2 ? make2 : make3);
-
-    const score = (matchCount * 10) + (f.rarity * 3) + (count * 2) + makeBonus;
-
-    results.push({
-      name: f.name,
-      rarity: f.rarity,
-      count,
-      matchCount,
-      score
-    });
-  });
+  renderFurnitureList(furnitures);
 
   results.sort((a, b) => b.score - a.score);
 
@@ -359,6 +352,21 @@ document.getElementById("calcBtn").addEventListener("click", () => {
 
     resultList.appendChild(div);
   });
+});
+
+  document.getElementById("sortFurniture").addEventListener("change", e => {
+  const mode = e.target.value;
+  let sorted = [...furnitures];
+
+  if (mode === "rarity") {
+    sorted.sort((a, b) => b.rarity - a.rarity || a.id - b.id);
+  } else if (mode === "name") {
+    sorted.sort((a, b) => a.name.localeCompare(b.name, "ja"));
+  } else {
+    sorted.sort((a, b) => a.id - b.id); // デフォルト
+  }
+
+  renderFurnitureList(sorted);
 });
 </script>
 
